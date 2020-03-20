@@ -9,8 +9,8 @@ char signal();
 char arithmetic_integer(char sign, int r);
 //整数除法的函数
 char division_integer(int a, int b);
-//分数加减的函数
-char add_sub_fraction(char sign, int r);
+//分数加减乘除的函数
+char arithmetic_fraction(char sign, int r);
 //假分数转化为带分数的函数
 void change(int a, int b, int* m, int* r);
 //辗转相除法求最大公因数
