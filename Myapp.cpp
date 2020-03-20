@@ -8,10 +8,10 @@ char signal() {
     int num = rand() % 100;
     int mod = num % 4;
     switch (mod) {
-        //case 0:return '+';
-        //case 1:return '-';
-    case 2:return '*';
-    case 3:return '/';
+        case 0:return '+';
+        case 1:return '-';
+        case 2:return '*';
+        case 3:return '#';
     }
 }
 
@@ -26,11 +26,14 @@ char arithmetic_integer(char sign, int r) {
     int* p1 = &multiple, * p2 = &remainder;
     //最大公因数
     int max = max_common(num1, num2);
+    char str1[50] = { '\0' };
+    char str2[50] = { '\0' };
 
     //srand((unsigned long)time(0));
 
     if (sign == '+') {
         printf("%d + %d = %d\n", num1, num2, num1 + num2);
+        //fputs("ccc", fp1);
         return num1 + num2;
     }
     else if (sign == '-') {
@@ -46,7 +49,7 @@ char arithmetic_integer(char sign, int r) {
         printf("%d × %d = %d\n", num1, num2, num1 * num2);
         return num1 * num2;
     }
-    else if (sign == '/') {
+    else if (sign == '#') {
         //判断余数，能整除则直接打印
         if (num1 == 0 || num3 == 1) {
             printf("%d ÷ %d = %d\n", num1, num3, num1);
@@ -133,13 +136,13 @@ char division_integer(int a, int b) {
     }
 }
 
-//分数加减的函数
-char add_sub_fraction(char sign, int r) {
+//分数加减乘除的函数
+char arithmetic_fraction(char sign, int r) {
     //分数1
-    int num1 = rand() % 20;
+    int num1 = rand() % r;
     int num2 = random(r);
     //分数2
-    int num3 = rand() % 20;
+    int num3 = rand() % r;
     int num4 = random(r);
     //分数结果
     int num5, num6;
@@ -150,26 +153,57 @@ char add_sub_fraction(char sign, int r) {
     int m1 = max_common(num1, num2);
     int m2 = max_common(num3, num4);
 
+    if (sign == '-') {
+        //对减的情况做判断，减数小于被减数则两者交换
+        if (num1 * num4 - num2 * num3 < 0) {
+            int t1, t2, t3;
+            t1 = num3;
+            num3 = num1;
+            num1 = t1;
+            t2 = num4;
+            num4 = num2;
+            num2 = t2;
+            //交换两个数后m1和m2也要交换
+            t3 = m2;
+            m2 = m1;
+            m1 = t3;
+        }
+    }
+    
+    if (sign == '#' && num3 == 0) {
+        num3 = random(r);
+        m2 = max_common(num3, num4);
+    }
+
     //判断两个分数是真分数、假分数、整数、0
     if (num1 % num2 == 0) {
-        printf("%d + ", num1 / num2);
+        printf("%d %c ", num1 / num2, sign);
     }
     else if (num1 == 0 || num2 == 1) {
-        printf("%d + ", num1);
+        printf("%d %c ", num1, sign);
     }
     else if (num1 > num2) {
         if (m1 == 1) {
             change(num1, num2, p1, p2);
-            printf("%d'%d/%d + ", *p1, *p2, num2);
+            printf("%d'%d/%d %c ", *p1, *p2, num2, sign);
         }
         else {
             num1 = num1 / m1;
             num2 = num2 / m1;
             change(num1, num2, p1, p2);
-            printf("%d'%d/%d + ", *p1, *p2, num2);
+            printf("%d'%d/%d %c ", *p1, *p2, num2, sign);
         }
     }
-    else printf("%d/%d + ", num1, num2);
+    else if (num1 < num2) {
+        if (m1 == 1) {
+            printf("%d/%d %c ", num1, num2, sign);
+        }
+        else {
+            num1 = num1 / m1;
+            num2 = num2 / m1;
+            printf("%d/%d %c ", num1, num2, sign);
+        }
+    }
 
     if (num3 % num4 == 0) {
         printf("%d", num3 / num4);
@@ -189,12 +223,39 @@ char add_sub_fraction(char sign, int r) {
             printf("%d'%d/%d", *p3, *p4, num4);
         }
     }
-    else  printf("%d/%d", num3, num4);
+    else if (num3 < num4) {
+        if (m2 == 1) {
+            printf("%d/%d", num3, num4);
+        }
+        else {
+            num3 = num3 / m2;
+            num4 = num4 / m2;
+            printf("%d/%d", num3, num4);        
+        }
+    }
 
     if (sign == '+') {
         num5 = num1 * num4 + num3 * num2;
         num6 = num2 * num4;
         division_integer(num5, num6);
+    }
+    else if (sign == '-') {
+        num5 = num1 * num4 - num3 * num2;
+        num6 = num2 * num4;
+        if (num5 == 0)  printf(" = %d\n", 0);
+        else division_integer(num5, num6);
+    }
+    else if (sign == '*') {
+        num5 = num1 * num3;
+        num6 = num2 * num4;
+        if (num5 == 0)  printf(" = %d\n", 0);
+        else division_integer(num5, num6);
+    }
+    else if (sign == '#') {
+        num5 = num1 * num4;
+        num6 = num2 * num3;
+        if (num5 == 0)  printf(" = %d\n", 0);
+        else division_integer(num5, num6);
     }
 
     return 0;
@@ -238,31 +299,38 @@ int min_common(int m, int n) {
 //获取不为0的随机数
 int random(int r) {
     int num = rand() % r;
-    while (num != 0)
-        return num;
+    while (num == 0) {
+        num = rand() % r;
+    }
+    return num;
 }
 
 int main() {
+    //FILE* fp1, * fp2;
+    //errno_t err1, err2;
     int i = 0;
     int n = 0, r = 0;//n控制生成题目数目，r控制题目中数值范围
-    char sign = '+';
+    char sign = '#';
+    //err1 = fopen_s(&fp1, "Exercises.txt", "w+");
+    //err2 = fopen_s(&fp2, "Answers.txt", "w+");
+
     srand((unsigned long)time(0));
-    /*
-    while (i < 10) {
-        printf("%c", signal());
-        i++;
-    }
-    */
+
     //printf("-r");
     //scanf_s("%d", &r);
     //printf("-n");
     //scanf_s("%d", &n);
+
     //n不能简单作为循环的次数，要通过打印算术题的次数来判断n道题目。bug
-    while (i < 10) {
-        //sign = signal();
-        add_sub_fraction(sign, 20);
+    //题目的验证函数
+    while (i < 10001) {
+        sign = signal();
+        arithmetic_fraction(sign, 10);
         i++;
     }
+
+    //getchar();
+    //getchar();
 
     return 0;
 }
