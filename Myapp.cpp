@@ -38,59 +38,53 @@ void digit_integer(int num, char e[], int& k) {
     }
 }
 
-//整数加减乘除的函数
-char arithmetic_integer(char sign, int r, int tag,int num1,char e[],int &k,int str[]) {
-    int num2 = rand() % r;
-    int num3 = random(r);  //分数的分母肯定不为0
-    //倍数和余数
-    int multiple = 0, remainder = 0;
-    int* p1 = &multiple, * p2 = &remainder;
-    //最大公因数
-    int max = max_common(num1, num2);
-
-    //srand((unsigned long)time(0));
-
-    if (sign == '+') {
-        printf("%d + %d = %d\n", num1, num2, num1 + num2);
-        strcat_s(e, 5, " + ");
-        k += 3;
-        digit_integer(num2, e, k);
-        str[0] = num1 + num2;
-        return num1 + num2;
+//在题目数组e[]中拼接运算符
+void signstrcat(char sign,char e[],int &k) {
+    e[k++] = ' ';
+    if (sign == '+' || sign == '-')e[k++] = sign;
+    else {
+        e[k++] = -95;
+        if (sign == '*')e[k++] = -63;
+        else e[k++] = -62;
     }
-    else if (sign == '-') {
-        if (num1 < num2) {//减法结果不能是负数
-            int temp = num1;
-            num1 = num2;
-            num2 = temp;
+    e[k++] = ' ';
+}
+
+//生成运算数
+int numcreate(int t[],int select,int r,char s[]) {
+    int i = 0, sum = 0;;
+    int choice = 0;
+    int num0 = 0;
+    if (select == 0) sum = 4;
+    else if (select == 1)sum = 6;
+    while (i < sum / 2 - 1) {
+        s[i] = signal();
+        i++;
+    }
+    
+    if (select == 0)num0 = 0;
+    else if (select == 1) {
+        if ((s[0] == '+' || s[0] == '-') && (s[1] == '*' || s[1] == '/')) {
+            num0 = 2;//前括号
         }
-        printf("%d - %d = %d\n", num1, num2, num1 - num2);
-        strcat_s(e, 5, " - ");
-        k += 3;
-        digit_integer(num2, e, k);
-        str[0] = num1 - num2;
-        return num1 - num2;
+        else if ((s[1] == '+' || s[1] == '-') && (s[0] == '*' || s[0] == '/')) {
+            num0 = 3;//后括号
+        }
+        else num0 = 4;//不用加括号
     }
-    else if (sign == '*') {
-        printf("%d × %d = %d\n", num1, num2, num1 * num2);
-        strcat_s(e, 5, " * ");
-        k += 3;
-        digit_integer(num2, e, k);
-        str[0] = num1 * num2;
-        return num1 * num2;
+
+    i = 0;
+    while (i < sum) {
+        t[i++] = rand() % r;
+        choice = rand() % 10;
+        if (choice % 2 == 0)t[i++] = 1;//整数
+        else t[i++] = random(r);//分数
     }
-    else if (sign == '/') {
-        printf("%d ÷ %d",num1, num3);
-        strcat_s(e, 5, " / ");
-        k += 3;
-        digit_integer(num3, e, k);
-        tag = 3;
-        division_integer(num1, num3, tag, sign, e, k, str);
-    }
+    return num0;
 }
 
 //整数除法的函数（判断分数是真分数、假分数、整数、0，并化简打印式子）
-char division_integer(int numA, int numB, int tag, char sign,char e[],int &k,int str[]) {
+char division_integer(int numA, int numB, int tag,char e[],int &k,int str[]) {
     //余数和倍数
     int multiple = 0, remainder = 0;
     int* p1 = &multiple, * p2 = &remainder;
@@ -101,63 +95,26 @@ char division_integer(int numA, int numB, int tag, char sign,char e[],int &k,int
     //分子为0或分母为1
     if (numA == 0 || numB == 1) {
         if (tag == 1) {
-            printf("%d", numA);
             digit_integer(numA, e, k);
         }
         else if (tag == 2) {
-            if (sign == '+') {
-                strcat_s(e, sizeof(" + ") + 10, " + ");
-                printf(" + %d", numA / numB);
-            }
-            else if (sign == '-') {
-                strcat_s(e, sizeof(" - ") + 10, " - ");
-                printf(" - %d", numA / numB);
-            }
-            else if (sign == '*') {
-                strcat_s(e, sizeof(" * ") + 10, " * ");
-                printf(" × %d", numA / numB);
-            }
-            else if (sign == '/') {
-                strcat_s(e, sizeof(" / ") + 10, " / ");
-                printf(" ÷ %d", numA / numB);
-            }
-            k += 3;
             digit_integer(numA / numB, e, k);
         }
         else if (tag == 3) {
-            printf(" = %d\n", numA);
+            str[0] = 0; str[1] = 0;
         }
         return 0;
     }
     //判断余数，能整除则返回除法答案
     else if (numA % numB == 0) {
         if (tag == 1) {
-            printf("%d", numA / numB);
             digit_integer(numA / numB, e, k);
         }
         else if (tag == 2) {
-            if (sign == '+') {
-                strcat_s(e, sizeof(" + ") + 10, " + ");
-                printf(" + %d", numA / numB);
-            }
-            else if (sign == '-') {
-                strcat_s(e, sizeof(" - ") + 10, " - ");
-                printf(" - %d", numA / numB);
-            }
-            else if (sign == '*') {
-                strcat_s(e, sizeof(" * ") + 10, " * ");
-                printf(" × %d", numA / numB);
-            }
-            else if (sign == '/') {
-                strcat_s(e, sizeof(" / ") + 10, " / ");
-                printf(" ÷ %d", numA / numB);
-            }
-            k += 3;
             digit_integer(numA / numB, e, k);
         }
         else if (tag == 3) {
-            printf(" = %d\n", numA / numB);
-            str[0] = numA / numB;
+            str[0] = numA / numB; str[1] = 0;
         }
         return numA / numB;
     }
@@ -170,43 +127,20 @@ char division_integer(int numA, int numB, int tag, char sign,char e[],int &k,int
         }
         change(numA, numB, p1, p2);
         if (tag == 1) {
-            printf("%d'%d/%d", *p1, *p2, numB);
             digit_integer(*p1, e, k);
-            e[k] = 39;
-            k++;
+            e[k++] = 39;
             digit_integer(*p2, e, k);
-            e[k] = 47;
-            k++;
+            e[k++] = '/';
             digit_integer(numB, e, k);
         }
         else if (tag == 2) {
-            if (sign == '+') {
-                strcat_s(e, sizeof(" + ") + 10, " + ");
-                printf(" + %d'%d/%d", *p1, *p2, numB);
-            }
-            else if (sign == '-') {
-                strcat_s(e, sizeof(" - ") + 10, " - ");
-                printf(" - %d'%d/%d", *p1, *p2, numB);
-            }
-            else if (sign == '*') {
-                strcat_s(e, sizeof(" * ") + 10, " * ");
-                printf(" × %d'%d/%d", *p1, *p2, numB);
-            }
-            else if (sign == '/') {
-                strcat_s(e, sizeof(" / ") + 10, " / ");
-                printf(" ÷ %d'%d/%d", *p1, *p2, numB);
-            }
-            k += 3;
             digit_integer(*p1, e, k);
-            e[k] = 39;
-            k++;
+            e[k++] = 39;
             digit_integer(*p2, e, k);
-            e[k] = 47;
-            k++;
+            e[k++] = '/';
             digit_integer(numB, e, k);
         }
         else if (tag == 3) {
-            printf(" = %d'%d/%d\n", *p1, *p2, numB);
             str[0] = *p1; str[1] = *p2; str[2] = numB;
         }
         return 1;
@@ -219,117 +153,79 @@ char division_integer(int numA, int numB, int tag, char sign,char e[],int &k,int
             numB = numB / max;
         }
         if (tag == 1) {
-            printf("%d/%d", numA, numB);
             digit_integer(numA, e, k);
-            e[k] = 47;
-            k++;
+            e[k++] = '/';
             digit_integer(numB, e, k);
         }
         else if (tag == 2) {
-            if (sign == '+') {
-                strcat_s(e, sizeof(" + ") + 10, " + ");
-                printf(" + %d/%d", numA, numB);
-            }
-            else if (sign == '-') {
-                strcat_s(e, sizeof(" - ") + 10, " - ");
-                printf(" - %d/%d", numA, numB);
-            }
-            else if (sign == '*') {
-                strcat_s(e, sizeof(" * ") + 10, " * ");
-                printf(" × %d/%d", numA, numB);
-            }
-            else if (sign == '/') {
-                strcat_s(e, sizeof(" / ") + 10, " / ");
-                printf(" ÷ %d/%d", numA, numB);
-            }
-            k += 3;
             digit_integer(numA, e, k);
-            e[k] = 47;
-            k++;
+            e[k++] = '/';
             digit_integer(numB, e, k);
         }
         else if (tag == 3) {
-            printf(" = %d/%d\n", numA, numB);
-            str[1] = numA; str[2] = numB;
+            str[0] = 0;str[1] = numA; str[2] = numB;
         }
         return 2;
     }
 }
 
-//分数加减乘除的函数
-char arithmetic_fraction(char sign, int r, int tag,char e[],int k,int str[]) {
-    //分数1
-    int num1 = rand() % r;
-    int num2 = random(r);
-    //分数2
-    int num3 = rand() % r;
-    int num4 = random(r);
-    //分数结果
-    int num5, num6;
-
+//加减乘除函数
+int arithmetic_fraction(int num[],char sign, int r, int &tag,char e[],int &k,int str[]) {
+    int x = 0;
+    
     if (sign == '-') {
         //对减的情况做判断，减数小于被减数则两者交换
-        if (num1 * num4 - num2 * num3 < 0) {
+        if (num[1] * num[4] - num[2] * num[3] < 0) {
             int t1, t2;
-            t1 = num3;
-            num3 = num1;
-            num1 = t1;
-            t2 = num4;
-            num4 = num2;
-            num2 = t2;
+            t1 = num[3];
+            num[3] = num[1];
+            num[1] = t1;
+            t2 = num[4];
+            num[4] = num[2];
+            num[2] = t2;
             //交换两个数后m1和m2也要交换
             //t3 = m2;
             //m2 = m1;
             //m1 = t3;
         }
     }
-    if (sign == '/' && num3 == 0) {
-        num3 = random(r);
+
+    if (sign == '/' && num[3] == 0) {
+        num[3] = random(r);
         //m2 = max_common(num3, num4);
     }
 
-    tag = 1;
-    division_integer(num1, num2, tag, sign, e, k, str);
-    e[k] = '\0';
+    if (tag == 1)division_integer(num[1], num[2], tag, e, k, str);
     tag = 2;
-    division_integer(num3, num4, tag, sign, e, k, str);
-    e[k] = '\0';
+    signstrcat(sign, e, k);
+    x = k;
+    division_integer(num[3], num[4], tag, e, k, str);
 
     if (sign == '+') {
-        num5 = num1 * num4 + num3 * num2;
-        num6 = num2 * num4;
+        num[5] = num[1] * num[4] + num[3] * num[2];
+        num[6] = num[2] * num[4];
         tag = 3;
-        division_integer(num5, num6, tag, sign, e, k, str);
+        division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '-') {
-        num5 = num1 * num4 - num3 * num2;
-        num6 = num2 * num4;
-        if (num5 == 0)  printf(" = %d\n", 0);
-        else {
-            tag = 3;
-            division_integer(num5, num6, tag, sign, e, k, str);
-        }
+        num[5] = num[1] * num[4] - num[3] * num[2];
+        num[6] = num[2] * num[4];
+        tag = 3;
+        division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '*') {
-        num5 = num1 * num3;
-        num6 = num2 * num4;
-        if (num5 == 0)  printf(" = %d\n", 0);
-        else {
-            tag = 3;
-            division_integer(num5, num6, tag, sign, e, k, str);
-        }
+        num[5] = num[1] * num[3];
+        num[6] = num[2] * num[4];
+        tag = 3;
+        division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '/') {
-        num5 = num1 * num4;
-        num6 = num2 * num3;
-        if (num5 == 0)  printf(" = %d\n", 0);
-        else {
-            tag = 3;
-            division_integer(num5, num6, tag, sign, e, k, str);
-        }
+        num[5] = num[1] * num[4];
+        num[6] = num[2] * num[3];
+        tag = 3;
+        division_integer(num[5], num[6], tag, e, k, str);
     }
-
-    return 0;
+    return x;
 }
 
 //假分数转化为带分数的函数
@@ -379,15 +275,18 @@ int random(int r) {
 int main() {
     FILE* fp1, * fp2;
     errno_t err1, err2;
-    int i = 0, j = 0, k = 0, m = 0, x = 0;
-    int select;//随机选定分数或整数运算
-    int n = 20, r = 5;//n控制生成题目数目，r控制题目中数值范围
+    int i = 0, j = 0, k = 0, m = 0, x = 0, l = 0;
+    int select1, select2;//随机选定分数或整数运算
+    int n = 10, r = 5;//n控制生成题目数目，r控制题目中数值范围
     //tag=1是第一个数，tag=2是后边的数，tag=3是答案
     int tag = 1;
-    int num1, result;
-    int str[3] = { 0 };//存放分数的三部分
+    int result;
+    int num[7] = { 0 }, t[8] = { 0 };
+    int str[3] = { 0 };//暂时存放分数的三部分
     char c[10] = { '\0' };//序号
-    char e[50] = { '\0' };//题目
+    char s[3] = { '\0' };//运算符
+    char e[100] = { '\0' };//题目
+    char e1[50] = { '\0' };
     char a[50] = { '\0' };//答案
     err1 = fopen_s(&fp1, "Exercises.txt", "w+");
     err2 = fopen_s(&fp2, "Answers.txt", "w+");
@@ -408,28 +307,85 @@ int main() {
         i = 0;
         while (i < n) {
             printf("%d. ", i + 1);
-            j = 0; k = 0; m = 0; x = 0;
-            select = rand() % 10;
-            if (select % 2 == 1)arithmetic_fraction(signal(), r, tag, e, k, str);
-            else {
-                num1 = rand() % 10;
-                digit_integer(num1, e, k);
-                arithmetic_integer(signal(), r, tag, num1, e, k, str);
+            tag = 1;
+            j = 0; k = 0; m = 0; x = 0; l = 0;
+            select1 = rand() % 100;
+            num[0] = numcreate(t, select1 % 2, r, s);
+            if (num[0] == 0) {
+                while (j < 4) {
+                    num[j + 1] = t[j];
+                    j++;
+                }
+                arithmetic_fraction(num, s[0], r, tag, e, k, str);
             }
+            else if (num[0] == 2 || num[0] == 4) {
+                while (j < 4) {
+                    num[j + 1] = t[j];
+                    j++;
+                }
+                if (num[0] == 2) {
+                    e[k++] = '(';
+                }
+                arithmetic_fraction(num, s[0], r, tag, e, k, str);
+                num[1] = num[5];
+                num[2] = num[6];
+                num[3] = t[4];
+                num[4] = t[5];
+                tag = 2;
+                if (num[0] == 2) {
+                    e[k++] = ')';
+                }
+                arithmetic_fraction(num, s[1], r, tag, e, k, str);
+            }
+            else if (num[0] == 3) {
+                j = 1;
+                while (j < 5) {
+                    num[j] = t[j + 1];
+                    j++;
+                }
+                e1[k++] = '(';
+                arithmetic_fraction(num, s[1], r, tag, e1, k, str);
+                e1[k++] = ')';
+                num[1] = t[0];
+                num[2] = t[1];
+                num[3] = num[5];
+                num[4] = num[6];
+                tag = 1;
+                k = 0;
+                l = arithmetic_fraction(num, s[0], r, tag, e, k, str);
+                e[l] = '\0';
+                l += strlen(e1);
+                strcat_s(e, e1);
+                e[l] = '\0';
+            }
+
+            printf("%s", e);
             digit_integer(i + 1, c, x);
             strcat_s(c, ".  ");//序号
-            if (str[0] != 0)digit_integer(str[0], a, m);
-            if (str[1] != 0) {
-                if (str[0] != 0) {
-                    a[m] = 39;//39是'的ASCII码
-                    m++;
-                }
-                digit_integer(str[1], a, m);
-                a[m] = 47;//47是/的ASCII码
-                m++;
-                digit_integer(str[2], a, m);
+
+            if (str[0] == 0 && str[1] == 0) {
+                digit_integer(str[0], a, m);
+                printf(" = 0\n");
             }
-            if (str[0] == 0 && str[1] == 0)a[0] = 48;
+            else if (str[0] != 0 && str[1] == 0) {
+                digit_integer(str[0], a, m);
+                printf(" = %d\n", str[0]);
+            }
+            else if (str[0] == 0 && str[1] != 0) {
+                digit_integer(str[1], a, m);
+                a[m++] = '/';
+                digit_integer(str[2], a, m);
+                printf(" = %d/%d\n", str[1], str[2]);
+            }
+            else {
+                digit_integer(str[0], a, m);
+                a[m++] = 39;//39是'的ASCII码
+                digit_integer(str[1], a, m);
+                a[m++] = '/';
+                digit_integer(str[2], a, m);
+                printf(" = %d'%d/%d\n", str[0], str[1], str[2]);
+            }
+
             fputs(c, fp1);
             fputs(c, fp2);//写入序号
             fputs(e, fp1);//写入题目
@@ -437,15 +393,15 @@ int main() {
             fputc('\n', fp1);
             fputc('\n', fp2);
             j = 0; m = 0; x = 0;
-            while (e[j] != '\0') {
+            while (j<100) {
                 e[j] = '\0';
                 j++;
             }//重置题目字符数组
-            while (a[m] != '\0') {
+            while (m<50) {
                 a[m] = '\0';
                 m++;
             }//重置答案字符数组
-            while (c[x] != '\0') {
+            while (x<10) {
                 c[x] = '\0';
                 x++;
             }//重置序号字符数组
