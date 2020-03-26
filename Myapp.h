@@ -5,12 +5,16 @@
 
 //生成运算符的函数
 char signal();
-//整数加减乘除的函数
-char arithmetic_integer(char sign, int r, int tag);
+//拆分整数数位并存放进e[]
+void digit_integer(int num, char e[], int& k);
+//在题目数组e[]中拼接运算符
+void signstrcat(char sign, char e[], int& k);
+//生成运算数
+int numcreate(int t[], int select, int r, char s[]);
 //整数除法的函数（判断分数是真分数、假分数、整数、0，并化简打印式子）
-char division_integer(int numA, int numB, int tag, char sign);
-//分数加减乘除的函数
-char arithmetic_fraction(char sign, int r, int tag);
+char division_integer(int numA, int numB, int tag, char e[], int& k, int str[]);
+//加减乘除函数
+int arithmetic_fraction(int num[], char sign, int r, int& tag, char e[], int& k, int str[]);
 //假分数转化为带分数的函数
 void change(int a, int b, int* m, int* r);
 //辗转相除法求最大公因数

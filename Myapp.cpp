@@ -1,4 +1,4 @@
-﻿#include <stdio.h>
+﻿chu#include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,7 +62,7 @@ int numcreate(int t[],int select,int r,char s[]) {
         i++;
     }
     
-    if (select == 0)num0 = 0;
+    if (select == 0)  num0 = 0;
     else if (select == 1) {
         if ((s[0] == '+' || s[0] == '-') && (s[1] == '*' || s[1] == '/')) {
             num0 = 2;//前括号
@@ -183,19 +183,14 @@ int arithmetic_fraction(int num[],char sign, int r, int &tag,char e[],int &k,int
             t2 = num[4];
             num[4] = num[2];
             num[2] = t2;
-            //交换两个数后m1和m2也要交换
-            //t3 = m2;
-            //m2 = m1;
-            //m1 = t3;
         }
     }
 
     if (sign == '/' && num[3] == 0) {
         num[3] = random(r);
-        //m2 = max_common(num3, num4);
     }
 
-    if (tag == 1)division_integer(num[1], num[2], tag, e, k, str);
+    if (tag == 1)  division_integer(num[1], num[2], tag, e, k, str);
     tag = 2;
     signstrcat(sign, e, k);
     x = k;
@@ -292,11 +287,6 @@ int main() {
     err2 = fopen_s(&fp2, "Answers.txt", "w+");
 
     srand((unsigned long)time(0));
-
-    //printf("-r");
-    //scanf_s("%d", &r);
-    //printf("-n");
-    //scanf_s("%d", &n);
 
     //n不能简单作为循环的次数，要通过打印算术题的次数来判断n道题目。bug：排除重复的题目
 
