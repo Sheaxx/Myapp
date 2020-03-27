@@ -39,7 +39,7 @@ void digit_integer(int num, char e[], int& k) {
 }
 
 //在题目数组e[]中拼接运算符
-void signstrcat(char sign,char e[],int &k) {
+void signstrcat(char sign, char e[], int& k) {
     e[k++] = ' ';
     if (sign == '+' || sign == '-')e[k++] = sign;
     else {
@@ -51,7 +51,7 @@ void signstrcat(char sign,char e[],int &k) {
 }
 
 //生成运算数
-int numcreate(int t[],int select,int r,char s[]) {
+int numcreate(int t[], int select, int r, char s[]) {
     int i = 0, sum = 0;;
     int choice = 0;
     int num0 = 0;
@@ -61,16 +61,16 @@ int numcreate(int t[],int select,int r,char s[]) {
         s[i] = signal();
         i++;
     }
-    
-    if (select == 0)  num0 = 0;
+
+    if (select == 0)num0 = 0;
     else if (select == 1) {
         if ((s[0] == '+' || s[0] == '-') && (s[1] == '*' || s[1] == '/')) {
-            num0 = 2;//前括号
+            num0 = 1;//前括号
         }
         else if ((s[1] == '+' || s[1] == '-') && (s[0] == '*' || s[0] == '/')) {
-            num0 = 3;//后括号
+            num0 = 2;//后括号
         }
-        else num0 = 4;//不用加括号
+        else num0 = 3;//不用加括号 
     }
 
     i = 0;
@@ -84,7 +84,7 @@ int numcreate(int t[],int select,int r,char s[]) {
 }
 
 //整数除法的函数（判断分数是真分数、假分数、整数、0，并化简打印式子）
-char division_integer(int numA, int numB, int tag,char e[],int &k,int str[]) {
+char division_integer(int &numA, int &numB, int tag, char e[], int& k, int str[]) {
     //余数和倍数
     int multiple = 0, remainder = 0;
     int* p1 = &multiple, * p2 = &remainder;
@@ -129,7 +129,7 @@ char division_integer(int numA, int numB, int tag,char e[],int &k,int str[]) {
         //最大公因数为1，无需化简
         if (max != 1) {
             numA = numA / max;
-            numB = numB / max; 
+            numB = numB / max;
         }
         change(numA, numB, p1, p2);
         if (tag == 1) {
@@ -169,16 +169,16 @@ char division_integer(int numA, int numB, int tag,char e[],int &k,int str[]) {
             digit_integer(numB, e, k);
         }
         else if (tag == 3) {
-            str[0] = 0;str[1] = numA; str[2] = numB;
+            str[0] = 0; str[1] = numA; str[2] = numB;
         }
         return 2;
     }
 }
 
 //加减乘除函数
-int arithmetic_fraction(int num[],char sign, int r, int &tag,char e[],int &k,int str[]) {
+int arithmetic_fraction(int num[], char sign, int r, int& tag, char e[], int& k, int str[]) {
     int x = 0;
-    
+
     if (sign == '-') {
         //对减的情况做判断，减数小于被减数则两者交换
         if (num[1] * num[4] - num[2] * num[3] < 0) {
@@ -313,7 +313,7 @@ int main() {
                 }
                 arithmetic_fraction(num, s[0], r, tag, e, k, str);
             }
-            else if (num[0] == 2 || num[0] == 4) {
+            else if (num[0] == 1 || num[0] == 3) {
                 while (j < 4) {
                     num[j + 1] = t[j];
                     j++;
@@ -332,7 +332,7 @@ int main() {
                 }
                 arithmetic_fraction(num, s[1], r, tag, e, k, str);
             }
-            else if (num[0] == 3) {
+            else if (num[0] == 2) {
                 j = 1;
                 while (j < 5) {
                     num[j] = t[j + 1];
@@ -389,15 +389,15 @@ int main() {
             fputc('\n', fp1);
             fputc('\n', fp2);
             j = 0; m = 0; x = 0;
-            while (j<100) {
+            while (j < 100) {
                 e[j] = '\0';
                 j++;
             }//重置题目字符数组
-            while (m<50) {
+            while (m < 50) {
                 a[m] = '\0'; e1[m] = '\0';
                 m++;
             }//重置答案字符数组
-            while (x<10) {
+            while (x < 10) {
                 c[x] = '\0';
                 x++;
             }//重置序号字符数组
