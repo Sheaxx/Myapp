@@ -101,7 +101,13 @@ char division_integer(int numA, int numB, int tag,char e[],int &k,int str[]) {
             digit_integer(numA / numB, e, k);
         }
         else if (tag == 3) {
-            str[0] = 0; str[1] = 0;
+            if (numA == 0) {
+                str[0] = 0; str[1] = 0;
+            }
+            else {
+                str[0] = numA;
+                str[1] = 0;
+            }
         }
         return 0;
     }
@@ -277,7 +283,7 @@ int main() {
     errno_t err1, err2;
     int i = 0, j = 0, k = 0, m = 0, x = 0, l = 0;
     int select1, select2;//随机选定分数或整数运算
-    int n = 10, r = 5;//n控制生成题目数目，r控制题目中数值范围
+    int n = 20, r = 5;//n控制生成题目数目，r控制题目中数值范围
     //tag=1是第一个数，tag=2是后边的数，tag=3是答案
     int tag = 1;
     int result;
@@ -306,7 +312,6 @@ int main() {
     else {
         i = 0;
         while (i < n) {
-            printf("%d. ", i + 1);
             tag = 1;
             j = 0; k = 0; m = 0; x = 0; l = 0;
             select1 = rand() % 100;
@@ -354,17 +359,18 @@ int main() {
                 k = 0;
                 l = arithmetic_fraction(num, s[0], r, tag, e, k, str);
                 e[l] = '\0';
-                l += strlen(e1);
                 strcat_s(e, e1);
+                l = strlen(e);
                 e[l] = '\0';
             }
 
+            printf("%d. ", i + 1);
             printf("%s", e);
             digit_integer(i + 1, c, x);
             strcat_s(c, ".  ");//序号
 
             if (str[0] == 0 && str[1] == 0) {
-                digit_integer(str[0], a, m);
+                digit_integer(0, a, m);
                 printf(" = 0\n");
             }
             else if (str[0] != 0 && str[1] == 0) {
@@ -398,7 +404,7 @@ int main() {
                 j++;
             }//重置题目字符数组
             while (m<50) {
-                a[m] = '\0';
+                a[m] = '\0'; e1[m] = '\0';
                 m++;
             }//重置答案字符数组
             while (x<10) {
