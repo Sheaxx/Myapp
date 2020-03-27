@@ -12,7 +12,7 @@ void signstrcat(char sign, char e[], int& k);
 //生成运算数
 int numcreate(int t[], int select, int r, char s[]);
 //整数除法的函数（判断分数是真分数、假分数、整数、0，并化简打印式子）
-char division_integer(int numA, int numB, int tag, char e[], int& k, int str[]);
+char division_integer(int& numA, int& numB, int tag, char e[], int& k, int str[]);
 //加减乘除函数
 int arithmetic_fraction(int num[], char sign, int r, int& tag, char e[], int& k, int str[]);
 //假分数转化为带分数的函数
