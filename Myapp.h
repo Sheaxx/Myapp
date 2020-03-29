@@ -23,3 +23,5 @@ int max_common(int m, int n);
 int min_common(int m, int n);
 //获取不为0的随机数
 int random(int r);
+//查找完全重复的题目
+int repeat(char e[]);
