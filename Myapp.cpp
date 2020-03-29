@@ -56,22 +56,19 @@ int numcreate(int t[], int select, int r, char s[]) {
     int i = 0, sum = 0;;
     int choice = 0;
     int num0 = 0;
-    //select = 1;
     if (select == 0) sum = 4;
-    else if (select == 1)sum = 6;
-    else if (select == 2)sum = 8;
+    else if (select == 1)  sum = 6;
+    else if (select == 2)  sum = 8;
     while (i < sum / 2 - 1) {
         s[i] = signal();
         i++;
     }
 
-    //s[0] = '+'; s[1] = '-';
-
-    if (select == 0)num0 = 0;
+    if (select == 0)  num0 = 0;
     else if (select == 1) {
         if ((s[0] == '+' || s[0] == '-') && (s[1] == '*' || s[1] == '/')) {
             int a = rand() % 10;
-            if (a % 2 == 0)num0 = 1;//前括号
+            if (a % 2 == 0)  num0 = 1;//前括号
             else num0 = 5;//不加括号
         }
         else if ((s[1] == '+' || s[1] == '-') && (s[0] == '*' || s[0] == '/')) {
@@ -104,12 +101,12 @@ int numcreate(int t[], int select, int r, char s[]) {
         else t[i++] = random(r);//分数
     }
 
-    /*t[0] = 0;
+    /*t[0] = 2;
     t[1] = 1;
-    t[2] = 4;
-    t[3] = 3;
-    t[4] = 4;
-    t[5] = 3;*/
+    t[2] = 1;
+    t[3] = 4;
+    t[4] = 9;
+    t[5] = 4;*/
 
     return num0;
 }
@@ -135,12 +132,10 @@ char division_integer(int &numA, int &numB, int tag, char e[], int& k, int str[]
         }
         else if (tag == 3) {
             if (numA == 0) {
-                //printf("\tnumA：%d\t",numA);
                 str[0] = 0; 
                 str[1] = 0;
             }
             else {
-                //printf("\tnumA：%d\t",numA);
                 str[0] = numA;
                 str[1] = 0;
             }
@@ -216,8 +211,9 @@ int arithmetic_fraction(int num[], char sign, int r, int& tag, char e[], int& k,
     int x = 0;
 
     if (sign == '-') {
-        //对减的情况做判断，减数小于被减数则两者交换
-        if (num[1] * num[4] - num[2] * num[3] < 0) {
+        //对减的情况做判断，减数小于被减数则返回-1，不打印该式子
+        if (num[1] * num[4] - num[2] * num[3] < 0)  return -1;
+        /*if (num[1] * num[4] - num[2] * num[3] < 0) {
             int t1, t2;
             t1 = num[3];
             num[3] = num[1];
@@ -225,14 +221,10 @@ int arithmetic_fraction(int num[], char sign, int r, int& tag, char e[], int& k,
             t2 = num[4];
             num[4] = num[2];
             num[2] = t2;
-        }
+        }*/
     }
 
     if (sign == '/' && num[3] == 0)  return -1;
-
-    //if (sign == '/' && num[3] == 0) {
-    //    num[3] = random(r);
-    //}
 
     if (tag == 1)  division_integer(num[1], num[2], tag, e, k, str);
     tag = 2;
@@ -244,24 +236,28 @@ int arithmetic_fraction(int num[], char sign, int r, int& tag, char e[], int& k,
         num[5] = num[1] * num[4] + num[3] * num[2];
         num[6] = num[2] * num[4];
         tag = 3;
+        //printf("+：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '-') {
         num[5] = num[1] * num[4] - num[3] * num[2];
         num[6] = num[2] * num[4];
         tag = 3;
+        //printf("-：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '*') {
         num[5] = num[1] * num[3];
         num[6] = num[2] * num[4];
         tag = 3;
+        //printf("*：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '/') {
         num[5] = num[1] * num[4];
         num[6] = num[2] * num[3];
         tag = 3;
+        //printf("/：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     return x;
@@ -356,7 +352,7 @@ int main() {
                         j++;
                     }//重置题目字符数组
                     while (m < 50) {
-                        a[m] = '\0'; e1[m] = '\0';
+                        a[m] = '\0'; e1[m] = '\0'; e2[m] = '\0';
                         m++;
                     }//重置答案字符数组
                     while (x < 10) {
@@ -382,7 +378,7 @@ int main() {
                         j++;
                     }//重置题目字符数组
                     while (m < 50) {
-                        a[m] = '\0'; e1[m] = '\0';
+                        a[m] = '\0'; e1[m] = '\0'; e2[m] = '\0';
                         m++;
                     }//重置答案字符数组
                     while (x < 10) {
@@ -407,7 +403,7 @@ int main() {
                         j++;
                     }//重置题目字符数组
                     while (m < 50) {
-                        a[m] = '\0'; e1[m] = '\0';
+                        a[m] = '\0'; e1[m] = '\0'; e2[m] = '\0';
                         m++;
                     }//重置答案字符数组
                     while (x < 10) {
@@ -432,7 +428,7 @@ int main() {
                         j++;
                     }//重置题目字符数组
                     while (m < 50) {
-                        a[m] = '\0'; e1[m] = '\0';
+                        a[m] = '\0'; e1[m] = '\0'; e2[m] = '\0';
                         m++;
                     }//重置答案字符数组
                     while (x < 10) {
@@ -457,7 +453,7 @@ int main() {
                         j++;
                     }//重置题目字符数组
                     while (m < 50) {
-                        a[m] = '\0'; e1[m] = '\0';
+                        a[m] = '\0'; e1[m] = '\0'; e2[m] = '\0';
                         m++;
                     }//重置答案字符数组
                     while (x < 10) {
