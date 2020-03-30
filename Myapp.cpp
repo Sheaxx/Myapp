@@ -103,12 +103,12 @@ int numcreate(int t[], int select, int r, char s[]) {
     //    else t[i++] = random(r);//分数
     //}
 
-    t[0] = 0;
+    t[0] = 1;
     t[1] = 1;
-    t[2] = 3;
+    t[2] = 2;
     t[3] = 1;
-    t[4] = 0;
-    t[5] = 4;
+    t[4] = 3;
+    t[5] = 1;
 
     return num0;
 }
@@ -337,11 +337,11 @@ int repeat(char e[]) {
         //printf("长度e：%d；长度test：%d；\n", strlen(e), strlen(test));
         //printf("e: %s; test: %s\n", e, test);
         if (strcmp(e, test) == 0) {
-            printf("重复了\n");
+            //printf("重复了\n");
             return -1;
         }
         else {
-            printf("没重复\n");
+            //printf("没重复\n");
             continue;
         }
     }
@@ -366,7 +366,6 @@ int main() {
     char e1[50] = { '\0' }, e2[50] = { '\0' };
     char a[50] = { '\0' };//答案
     err1 = fopen_s(&fp1, "Exercises.txt", "w+");
-    //err1 = fopen_s(&fp1, "test.txt", "w+");
     err2 = fopen_s(&fp2, "Answers.txt", "w+");
 
     srand((unsigned long)time(0));
@@ -660,8 +659,25 @@ int main() {
 
             printf("%d. ", i + 1);
             int repeat_n = repeat(e);
-            //if (repeat_n == 1)  printf("%s", e);
-            //else if(repeat_n == -1) continue;
+            if (repeat_n == 1)  printf("%s", e);
+            else if (repeat_n == -1) {
+                j = 0; m = 0; x = 0;
+                i++;
+                while (j < 100) {
+                    e[j] = '\0';
+                    j++;
+                }//重置题目字符数组
+                while (m < 50) {
+                    a[m] = '\0'; e1[m] = '\0'; e2[m] = '\0';
+                    m++;
+                }//重置答案字符数组
+                while (x < 10) {
+                    c[x] = '\0';
+                    x++;
+                }//重置序号字符数组
+                str[0] = str[1] = str[2] = 0;
+                continue;
+            }
 
             if (str[0] == 0 && str[1] == 0) {
                 printf(" = 0\n");
