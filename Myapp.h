@@ -9,6 +9,8 @@ char signal();
 void digit_integer(int num, char e[], int& k);
 //在题目数组e[]中拼接运算符
 void signstrcat(char sign, char e[], int& k);
+//判断符号情况
+int order(char s[], int select, int a);
 //生成运算数
 int numcreate(int t[], int select, int r, char s[]);
 //整数除法的函数（判断分数是真分数、假分数、整数、0，并化简打印式子）
@@ -23,3 +25,8 @@ int max_common(int m, int n);
 int min_common(int m, int n);
 //获取不为0的随机数
 int random(int r);
+//查找完全重复的题目
+int repeat(char e[]);
+
+//分析情况并写入文件
+char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2);
