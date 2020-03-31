@@ -29,3 +29,5 @@ int repeat(char e[]);
 char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2, bool flag);
 //运算菜单
 void menu(int n, int r, char str1[], char str2[], bool flag);
+//测试函数，用作性能测试
+void test();

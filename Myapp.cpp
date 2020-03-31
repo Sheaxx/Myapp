@@ -518,8 +518,8 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
 
 //运算菜单
 void menu(int n,int r,char str1[],char str2[],bool flag) {
-    FILE* fp1, * fp2, * fp3, * fp4;
-    errno_t err1, err2, err3, err4;
+    FILE* fp1, * fp2, * fp3, * fp4, * fp5;
+    errno_t err1, err2, err3, err4, err5;
     int select = 0, select1 = 0;  //随机选定分数或整数运算
     int i = 0, j = 0, k = 0, m = 0, p = 0, x = 0, a = 0;
     int y1 = 0, y2 = 0, y3 = 0;  //打印判定结果的参数
@@ -532,10 +532,12 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
     char ef[100] = { '\0' };  //存放题目
     char af[20] = { '\0' };  //存放答案
     char cmp[20] = { '\0' };
+    char grade[10] = { '\0' };
     err1 = fopen_s(&fp1, "Exercises.txt", "w+");
     err2 = fopen_s(&fp2, "Answers.txt", "w+");
     err3 = fopen_s(&fp3, str1, "r");
     err4 = fopen_s(&fp4, str2, "r");
+    err5 = fopen_s(&fp5, "Grade.txt", "w+");
 
     srand((unsigned long)time(0));
 
@@ -641,6 +643,36 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
         for (y3 = 0; y3 < y2 - 1; y3++)
             printf("%d，", w[y3]);
         printf("%d)\n", w[y3]);
+
+        printf("\n判定完成！判定结果已存入Grade.txt中。\n");
+
+        j = 0;
+        fputs("Correct: ", fp5);
+        digit_integer(y1, grade, j);
+        fputs(grade, fp5);
+        fputs(" (", fp5);
+        for (y3 = 0; y3 <= y1 - 1; y3++) {
+            j = 0;
+            digit_integer(c[y3], grade, j);
+            fputs(grade, fp5);
+            if (y3 + 1 != y1)fputs(",", fp5);
+        }
+        if (c[0] == 0)fputs("0", fp5);
+        fputs(")\n", fp5);
+
+        j = 0;
+        fputs("Wrong: ", fp5);
+        digit_integer(y2, grade, j);
+        fputs(grade, fp5);
+        fputs(" (", fp5);
+        for (y3 = 0; y3 <= y2 - 1; y3++) {
+            j = 0;
+            digit_integer(w[y3], grade, j);
+            fputs(grade, fp5);
+            if (y3 + 1 != y2)fputs(",", fp5);
+        }
+        if (w[0] == 0)fputs("0", fp5);
+        fputs(")\n", fp5);
     }
     else if ((fp3 == NULL || fp4 == NULL) && flag == false) {
         printf("未找到指定文件。\n");
@@ -650,13 +682,22 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
             select1 = rand() % 30;
             num[0] = numcreate(t, select1 % 3, r, s);  //随机生成数
             strcpy_s(cmp, classify(num, t, s, r, i, fp1, fp2, flag));
-            if (i == n - 1) printf("\n成功生成%d道四则运算题，题目和答案已存入Exercises.txt和Answers.txt中。\n",n);
             if (strcmp(cmp, "-1") == 0)  continue;
             else i++;
         }
+        printf("\n成功生成%d道四则运算题，题目和答案已存入Exercises.txt和Answers.txt中。\n", n);
         fclose(fp1);
         fclose(fp2);
     }
+}
+
+//测试函数，用作性能测试
+void test() {
+    char str1[] = "\0";
+    char str2[] = "\0";
+    printf("————————————————————————————————————————\n");
+    menu(10000, 10, str1, str2, true);
+    printf("————————————————————————————————————————\n");
 }
 
 void main(int argc, char* argv[]) {
@@ -702,4 +743,7 @@ void main(int argc, char* argv[]) {
         printf("————————————————————————————————————————\n");
     }
     else printf("输入指令错误。（可输入\"Myapp.exe -h\"查看帮助手册）\n");
+
+    //性能测试函数
+    //test();
 }
