@@ -1,4 +1,4 @@
-﻿chu#include <stdio.h>
+﻿#include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,7 +50,7 @@ void signstrcat(char sign, char e[], int& k) {
     e[k] = '\0';
 }
 
-//判断符号情况
+//判断符号和括号的情况，确定运算顺序
 int order(char s[], int select, int a) {
     int num0 = 0;
     if (select == 0)  num0 = 0;
@@ -83,6 +83,7 @@ int order(char s[], int select, int a) {
         else if ((s[0] == '*' || s[0] == '/') && (s[1] == '+' || s[1] == '-') && (s[2] == '*' || s[2] == '/'))
             num0 = 10;//先算前后，再算中间
     }
+    //返回运算情况
     return num0;
 }
 
@@ -91,10 +92,9 @@ int numcreate(int t[], int select, int r, char s[]) {
     int i = 0, sum = 0;;
     int choice = 0;
     int a = rand() % 10;
-    if (select == 0) sum = 4;//两个运算数
-    else if (select == 1)  sum = 6;//三个运算数
-    else if (select == 2)  sum = 8;//四个运算数
-    while (i < sum / 2 - 1) {//生成运算数-1个运算符
+    if (select == 0) sum = 4;  //两个运算数
+    else if (select == 1)  sum = 6;  //三个运算数
+    else if (select == 2)  sum = 8;  //四个运算数
         s[i] = signal();
         i++;
     }
@@ -103,10 +103,11 @@ int numcreate(int t[], int select, int r, char s[]) {
     while (i < sum) {
         t[i++] = rand() % r;
         choice = rand() % 10;
-        if (choice % 2 == 0)t[i++] = 1;//整数
-        else t[i++] = random(r);//分数
+        if (choice % 2 == 0)t[i++] = 1;  //整数
+        else t[i++] = random(r);  //分数
     }
 
+    //获取运算情况
     return order(s, select, a);
 }
 
@@ -118,7 +119,7 @@ char division_integer(int& numA, int& numB, int tag, char e[], int& k, int str[]
     //最大公因数
     int max = max_common(numA, numB);
 
-    //tag=1为第一个数，tag=2为后边的数，tag=3为答案
+    //tag=1为第一个运算数，tag=2为其他运算数，tag=3为答案
     //被除数为0，除法不存在
     if (numB == 0)  return -1;
     //分子为0或分母为1
@@ -205,58 +206,49 @@ char division_integer(int& numA, int& numB, int tag, char e[], int& k, int str[]
     }
 }
 
-//加减乘除函数
+//运算数的加减乘除函数
 int arithmetic_fraction(int num[], char sign, int r, int& tag, char e[], int& k, int str[]) {
     int x = 0;
 
     if (sign == '-') {
         //对减的情况做判断，减数小于被减数则返回-1，不打印该式子
         if (num[1] * num[4] - num[2] * num[3] < 0)  return -1;
-        /*if (num[1] * num[4] - num[2] * num[3] < 0) {
-            int t1, t2;
-            t1 = num[3];
-            num[3] = num[1];
-            num[1] = t1;
-            t2 = num[4];
-            num[4] = num[2];
-            num[2] = t2;
-        }*/
     }
 
+    //被除数为0则返回-1，不打印该式子
     if (sign == '/' && num[3] == 0)  return -1;
 
+    //第一个运算数
     if (tag == 1)  division_integer(num[1], num[2], tag, e, k, str);
     tag = 2;
     signstrcat(sign, e, k);
     x = k;
+    //第二个运算数
     division_integer(num[3], num[4], tag, e, k, str);
 
+    //运算过程
     if (sign == '+') {
         num[5] = num[1] * num[4] + num[3] * num[2];
         num[6] = num[2] * num[4];
         tag = 3;
-        //printf("+：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '-') {
         num[5] = num[1] * num[4] - num[3] * num[2];
         num[6] = num[2] * num[4];
         tag = 3;
-        //printf("-：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '*') {
         num[5] = num[1] * num[3];
         num[6] = num[2] * num[4];
         tag = 3;
-        //printf("*：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     else if (sign == '/') {
         num[5] = num[1] * num[4];
         num[6] = num[2] * num[3];
         tag = 3;
-        //printf("/：%d+%d\n", num[5], num[6]);
         division_integer(num[5], num[6], tag, e, k, str);
     }
     return x;
@@ -275,7 +267,6 @@ void change(int a, int b, int* mu, int* re) {
 int max_common(int m, int n) {
     //m为分子，n为分母, k为余数
     int k;
-
     while (n != 0)
     {
         k = m % n;
@@ -284,17 +275,6 @@ int max_common(int m, int n) {
     }
     //返回最大公因数
     return m;
-}
-
-//辗转相除法求最小公倍数
-int min_common(int m, int n) {
-    //返回值为最小公倍数
-    int k;
-    k = max_common(m, n);
-    if (k != 1)
-        return m * n / k;
-    else
-        return m * n;
 }
 
 //获取不为0的随机数
@@ -310,25 +290,26 @@ int random(int r) {
 int repeat(char e[]) {
     int i = 0;
     do {
-        if (strcmp(list[i], e) == 0)return -1;
+        //查重成功，返回-1
+        if (strcmp(list[i], e) == 0)  return -1;
         else i++;
     } while (strcmp(list[i], "\0") != 0);
     return 1;
 }
 
-//分析情况并写入文件
+//分析运算情况并写入文件
 char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,bool flag) {
     int j = 0, k = 0, m = 0, x = 0, l = 0;
     int tag = 1; //tag=1是第一个数，tag=2是后边的数，tag=3是答案
     int num1[7] = { 0 };
-    int str[3] = { 0 };//暂时存放分数的三部分
-    char c[10] = { '\0' };//序号
-    char e[100] = { '\0' };//题目
-    char e1[50] = { '\0' }, e2[50] = { '\0' };
-    char a[20] = { '\0' };//答案
+    int str[3] = { 0 };  //暂时存放分数的三部分
+    char c[10] = { '\0' };  //序号
+    char e[100] = { '\0' };  //题目
+    char e1[50] = { '\0' }, e2[50] = { '\0' };  //有括号的拼接式
+    char a[20] = { '\0' };  //答案
     char wrong[5] = "-1";
 
-    if (num[0] == 0) {//两个运算数
+    if (num[0] == 0) {  //两个运算数
         while (j < 4) {
             num[j + 1] = t[j];
             j++;
@@ -336,7 +317,7 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
         if (arithmetic_fraction(num, s[0], r, tag, e, k, str) == -1)
             return wrong;
     }
-    else if (num[0] == 1 || num[0] == 3) {//三个运算数 按顺序从左到右运算
+    else if (num[0] == 1 || num[0] == 3) {  //三个运算数 按顺序从左到右运算
         while (j < 4) {
             num[j + 1] = t[j];
             j++;
@@ -357,7 +338,7 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
         if (arithmetic_fraction(num, s[1], r, tag, e, k, str) == -1)
             return wrong;
     }
-    else if (num[0] == 2 || num[0] == 5) {//三个运算数 右边两个数先运算
+    else if (num[0] == 2 || num[0] == 5) {  //三个运算数 右边两个数先运算
         j = 1;
         while (j < 5) {
             num[j] = t[j + 1];
@@ -381,7 +362,7 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
         l = strlen(e);
         e[l] = '\0';
     }
-    else if (num[0] == 6) {//四个运算数 按顺序运算
+    else if (num[0] == 6) {  //四个运算数 按顺序运算
         while (j < 4) {
             num[j + 1] = t[j];
             j++;
@@ -403,7 +384,7 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
         if (arithmetic_fraction(num, s[2], r, tag, e, k, str) == -1)
             return wrong;
     }
-    else if (num[0] == 7) {//四个运算数 先算中间两个数
+    else if (num[0] == 7) {  //四个运算数 先算中间两个数
         j = 1;
         while (j < 5) {
             num[j] = t[j + 1];
@@ -432,7 +413,7 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
         if (l == -1)return wrong;
         e[k] = '\0';
     }
-    else if (num[0] == 8 || num[0] == 10) {//四个运算数 先算前后 再中间运算
+    else if (num[0] == 8 || num[0] == 10) {  //四个运算数 先算前后 再中间运算
         while (j < 4) {
             num1[j + 1] = t[j];
             j++;
@@ -462,7 +443,7 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
         l = arithmetic_fraction(num, s[1], r, tag, e1, k, str);
         if (l == -1)return wrong;
     }
-    else if (num[0] == 9) {//四个运算数 先算后面三个数
+    else if (num[0] == 9) {  //四个运算数 先算后面三个数
         j = 1;
         while (j < 5) {
             num[j] = t[j + 1];
@@ -488,19 +469,20 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
         e[l] = '\0';
         strcat_s(e, e1);
     }
-    if (flag == true) {//如果是检查文件的运算结果 不用查重
+    if (flag == true) {  //如果是检查文件的运算结果 不用查重
         if (repeat(e) == -1)return wrong;
         else {
             strcpy_s(list[se], 50, e);
             se++;
         }
     }
-
-    printf("%d. ", i + 1);//打印序号
-    printf("%s", e);//打印题目
+	
+    printf("%d. ", i + 1);  //打印序号
+    printf("%s", e);  //打印题目
     digit_integer(i + 1, c, x);
-    strcat_s(c, ".  ");//序号拼接
+    strcat_s(c, ".  ");  //序号拼接
 
+    //打印结果
     if (str[0] == 0 && str[1] == 0) {
         digit_integer(0, a, m);
         printf(" = 0\n");
@@ -525,22 +507,23 @@ char* classify(int num[], int t[], char s[], int r, int i, FILE* fp1, FILE* fp2,
     }
 
     fputs(c, fp1);
-    fputs(c, fp2);//写入序号
-    fputs(e, fp1);//写入题目
-    fputs(a, fp2);//写入答案
+    fputs(c, fp2);  //写入序号
+    fputs(e, fp1);  //写入题目
+    fputs(a, fp2);  //写入答案
     fputc('\n', fp1);
     fputc('\n', fp2);
 
     return a;
 }
 
+//运算菜单
 void menu(int n,int r,char str1[],char str2[],bool flag) {
     FILE* fp1, * fp2, * fp3, * fp4;
     errno_t err1, err2, err3, err4;
     int select = 0, select1 = 0;  //随机选定分数或整数运算
     int i = 0, j = 0, k = 0, m = 0, p = 0, x = 0, a = 0;
-    int y1 = 0, y2 = 0, y3 = 0;
-    int mark = 0, tab = 0;
+    int y1 = 0, y2 = 0, y3 = 0;  //打印判定结果的参数
+    int mark = 0, tab = 0;  //分数和括号的判定标记
     int mo[4] = { 0 };
     int mi = 0;
     int num[7] = { 0 }, t[8] = { 0 };
@@ -560,33 +543,32 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
         printf("文件不存在。\n");
     }
     else if (fp3 != NULL && fp4 != NULL && flag == false) {
+        //获取题目和答案
         while (fgets(ef, sizeof(ef) - 1, fp3) && fgets(af, sizeof(af) - 1, fp4)) {
-            //获取题目和答案
-            j = 0; k = 0; m = 0; p = 0; tab = 0; mark = 0;
-            //y1 = 0; y2 = 0; y3 = 0;  //不需要初始化y2 y3
+            j = 0; k = 0; m = 0; p = 0; tab = 0; mark = 0;  //初始化
             while (j >= '0' && j <= '9')  j++;
-            j += 4;//指到序号后的数字的第一位
+            j += 4;  //指到序号后的数字的第一位
             for (; j < strlen(ef); j++) {
                 if (ef[j] >= '0' && ef[j] <= '9') {
                     if (mark == 0 || mark == 1) {
                         mi = ef[j] - 48;
                         t[k] = t[k] * 10 + mi;
                         if (ef[j + 1] == ' ' || ef[j + 1] == '\n' || ef[j + 1] == '\0' || ef[j + 1] == ')') {
-                            if (mark == 0)t[++k] = 1;//说明是整数，分母置为1
-                            else mark = 0;//说明分母的数字结束
+                            if (mark == 0)t[++k] = 1;  //说明是整数，分母置为1
+                            else mark = 0;  //说明分母的数字结束
                             k++;
-                            if (k % 2 == 0 && k != 0)p++;//储存分子的数组指向下一位
+                            if (k % 2 == 0 && k != 0)p++;  //储存分子的数组指向下一位
                         }
-                        else if (ef[j + 1] == '/') {//分子数字结束
+                        else if (ef[j + 1] == '/') {  //分子数字结束
                             mark = 1;
                             k++;
                         }
-                        else if (ef[j + 1] == 39)mark = 2;//带分数
+                        else if (ef[j + 1] == 39)mark = 2;  //带分数
                     }
                     else if (mark == 2) {
                         mi = ef[j] - 48;
                         mo[p] = 10 * mo[p] + mi;
-                        if (ef[j + 1] == '/') {//带分数分子数字结束
+                        if (ef[j + 1] == '/') {  //带分数分子数字结束
                             k++;
                             mark = 1;
                         }
@@ -596,8 +578,8 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
                     s[m++] = ef[j];
                 }
                 else if (ef[j] == '(') {
-                    if (k == 0)tab = 1;//第一个数之前的括号
-                    else if (k == 2)tab = 2;//第二个数之前的括号
+                    if (k == 0)tab = 1;  //第一个数之前的括号
+                    else if (k == 2)tab = 2;  //第二个数之前的括号
                 }
             }
 
@@ -627,11 +609,11 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
 
             num[0] = order(s, select, a);
             digit_integer(i + 1, cmp, y3);
+            //拼接序号
             cmp[y3++] = '.';
             cmp[y3++] = ' ';
             cmp[y3++] = ' ';
             cmp[y3++] = '\0';
-            //y3 = strlen(cmp);
             cmp[strlen(cmp)] = '\0';
             strcat_s(cmp, 20, classify(num, t, s, r, i, fp1, fp2, flag));
             y3 = strlen(cmp);
@@ -649,7 +631,7 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
         fclose(fp4);
 
         //打印正确结果
-        printf("Correct: %d (", y1);
+        printf("\nCorrect: %d (", y1);
         for (y3 = 0; y3 < y1 - 1; y3++)
             printf("%d，", c[y3]);
         printf("%d)\n", c[y3]);
@@ -666,9 +648,10 @@ void menu(int n,int r,char str1[],char str2[],bool flag) {
     else {
         while (i < n) {
             select1 = rand() % 30;
-            num[0] = numcreate(t, select1 % 3, r, s);//随机生成数
+            num[0] = numcreate(t, select1 % 3, r, s);  //随机生成数
             strcpy_s(cmp, classify(num, t, s, r, i, fp1, fp2, flag));
-            if (strcmp(cmp, "-1") == 0)continue;
+            if (i == n - 1) printf("\n成功生成%d道四则运算题，题目和答案已存入Exercises.txt和Answers.txt中。\n",n);
+            if (strcmp(cmp, "-1") == 0)  continue;
             else i++;
         }
         fclose(fp1);
@@ -683,16 +666,22 @@ void main(int argc, char* argv[]) {
     char str2[] = "\0";
     bool flag = true;
     if (strcmp(argv[1], "-h") == 0) {
-        printf("欢迎使用《自动生成小学四则运算题目》程序！\n");
-        printf("本程序支持+-*/的运算符，可生成2-4位运算数的四则运算题。\n");
-        printf("可供用户输入的命令如下：\n");
-        printf("Myapp.exe -n <题目个数> -r <数值范围>\n");
-        printf("功能：自动生成<题目个数>道题，每道题在<数值范围>内\n");
-        printf("Myapp.exe -e exercisefile.txt -a answerfile.txt\n");
-        printf("功能：程序对exercisefile.txt和answerfile.txt进行判定并统计数量\n");
-        printf("Myapp.exe -h\n");
-        printf("功能：查询本程序的使用方式\n");
-    }
+        printf("————————————————————————————————————————\n");
+        printf("\t欢迎使用《自动生成小学四则运算题目》程序！\n");
+        printf("\t本程序支持+-*/的运算符，可生成2-4位运算数的四则运算题。\n");
+        printf("\n");
+        printf("\t可供用户输入的命令如下：\n");
+        printf("\n");
+        printf("\tMyapp.exe -n <题目个数> -r <数值范围>\n");
+        printf("\t功能：自动生成<题目个数>道题，每道题在<数值范围>内\n");
+        printf("\n");
+        printf("\tMyapp.exe -e exercisefile.txt -a answerfile.txt\n");
+        printf("\t功能：程序对exercisefile.txt和answerfile.txt进行判定并统计数量\n");
+        printf("\n");
+        printf("\tMyapp.exe -h\n");
+        printf("\t功能：查询本程序的使用方式\n");
+        printf("————————————————————————————————————————\n");
+     }
     else if (argc == 5 && strcmp(argv[1], "-n") == 0) {
         for (i = 0; argv[2][i] != '\0';i++) {
             mi = argv[2][i] - 48;
@@ -702,11 +691,15 @@ void main(int argc, char* argv[]) {
             mi = argv[4][i] - 48;
             r = r * 10 + mi;
         }
+        printf("————————————————————————————————————————\n");
         menu(n, r, str1, str2, flag);
+        printf("————————————————————————————————————————\n");
     }
     else if (argc == 5 && strcmp(argv[1], "-e") == 0) {
         flag = false;
+        printf("————————————————————————————————————————\n");
         menu(n, r, argv[2], argv[4], flag);
+        printf("————————————————————————————————————————\n");
     }
-    else printf("输入错误。（可输入\"Myapp.exe -h\"查看帮助手册）\n");
+    else printf("输入指令错误。（可输入\"Myapp.exe -h\"查看帮助手册）\n");
 }
